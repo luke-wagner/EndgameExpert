@@ -1,9 +1,11 @@
+import sys
+
 import dependencies.pgnToFen.pgntofen as ptf
 import re
 import os
 import mysql.connector
 
-from config import CCOM_USERNAME, DB_USERNAME, DB_PWD
+from config import DB_USERNAME, DB_PWD
 from categorize_pos import categorize_pos
 
 db = mysql.connector.connect(
@@ -15,7 +17,7 @@ db = mysql.connector.connect(
 
 cursor = db.cursor()
 
-def parseFile(fileName):
+def parseFile(fileName, ccom_username):
     pgnConverter = ptf.PgnToFen()
     pgnConverter.resetBoard()
     stats =  pgnConverter.pgnFile(fileName)
@@ -24,7 +26,7 @@ def parseFile(fileName):
         game_link = game_data[0][-1]
         game_link = re.findall(r'"(.*?)"', game_link)[0]
 
-        player_color_index = str(game_data[0]).find(CCOM_USERNAME) - 7
+        player_color_index = str(game_data[0]).find(ccom_username) - 7
         player_color = str(game_data[0])[player_color_index]
 
         result = game_data[0][6].strip()
@@ -85,12 +87,12 @@ def parseFile(fileName):
             
             last_fen = fen
 
-def parseAllFiles():
+def parseAllFiles(ccom_username):
     pgnFiles = os.listdir('./downloads')
     
     for pgnFile in pgnFiles:
         try:
-            parseFile("downloads/" + pgnFile)
+            parseFile("downloads/" + pgnFile, ccom_username)
         except:
             pass
 
@@ -100,4 +102,10 @@ def get_pieces(fen):
     pieces.sort()
     return pieces
 
-parseAllFiles()
+
+if __name__ == "__main__":
+    # Capture arguments passed from PHP
+    ccom_username = sys.argv[1]
+    #start_date = sys.argv[2]
+    #end_date = sys.argv[3]
+    parseAllFiles(ccom_username)

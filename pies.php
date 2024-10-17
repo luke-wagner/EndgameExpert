@@ -62,12 +62,37 @@ if (isset($_GET['username']) && isset($_GET['start-date']) && isset($_GET['end-d
             <h1>Loading</h1>
             <div class="loading-animation"></div>
             <p class="loading-message">Please wait while we process your data...</p>
+            <p id="load-message-l2" class="loading-message">Downloading files...</p>
         </div>
 
         <script>
             // Send an AJAX request to trigger the PHP script
             window.onload = function() {
-                fetch('run_script.php')
+                fetch('run_script_1.php')
+                    .then(response => response.text())
+                    .then(data => {
+                        // When the PHP script finishes, hide the loading message and show the content
+                        //document.getElementById('loading').style.display = 'none';
+                        //document.getElementById('content').style.display = 'block';
+                        document.getElementById('load-message-l2').innerHTML = "Clearing DB...";
+                        //window.location.href = window.location.pathname; // Strip away the extra params in URL
+
+                    })
+                    .catch(error => console.error('Error:', error));
+
+                fetch('run_script_2.php')
+                    .then(response => response.text())
+                    .then(data => {
+                        // When the PHP script finishes, hide the loading message and show the content
+                        //document.getElementById('loading').style.display = 'none';
+                        //document.getElementById('content').style.display = 'block';
+                        document.getElementById('load-message-l2').innerHTML = "Evaluating Positions...";
+                        //window.location.href = window.location.pathname; // Strip away the extra params in URL
+
+                    })
+                    .catch(error => console.error('Error:', error));
+
+                fetch('run_script_3.php')
                     .then(response => response.text())
                     .then(data => {
                         // When the PHP script finishes, hide the loading message and show the content
