@@ -3,3 +3,4 @@ dependencies
 downloads
 config.py
 .env
+backup
