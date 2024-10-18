@@ -340,27 +340,55 @@ if (isset($_GET['username']) && isset($_GET['start-date']) && isset($_GET['end-d
     </div>
 
     <script>
+        function show_alert(){
+            alert('You clicked on a chess board!');
+        }
+
         // Function to inject iframes into the game grid when details are opened
         document.querySelectorAll('details').forEach((details, index) => {
             details.addEventListener('toggle', function() {
                 if (this.open) {
                     let gameGrid = document.getElementById('gameGrid' + index);
                     let descriptor = this.getAttribute('data-descriptor'); // Get the descriptor from the data attribute
-
-                    var loopCounter = 0
+                    
+                    var loopCounter = 0;
 
                     fetch('get_games.php?descriptor=' + descriptor)
                         .then(response => response.json())  // Parse JSON from PHP response
                         .then(data => {
                             data.forEach(game => {
                                 if (loopCounter < 18){
-                                    let iframe = document.createElement('iframe');
-                                    //var testFen = '2K5/P7/3kN2p/3n3P/8/8/8/8'
-                                    iframe.src = 'https://mutsuntsai.github.io/fen-tool/gen/?fen=' + game.fen;
+                                    // Create and insert the iframe
+                                    var iframe = document.createElement('iframe');
+                                    iframe.src = 'https://mutsuntsai.github.io/fen-tool/gen/?fen=' + game.fen;  // Replace with your iframe source
                                     iframe.style.border = 'none';
                                     iframe.style.width = '354px';
                                     iframe.style.height = '354px';
-                                    gameGrid.appendChild(iframe);
+                                    iframe.style.position = 'relative';  // Ensure the iframe is positioned correctly
+
+                                    // Create and insert the overlay div
+                                    var overlay = document.createElement('div');
+                                    overlay.style.position = 'absolute';
+                                    overlay.style.top = '0';
+                                    overlay.style.left = '0';
+                                    overlay.style.width = '100%';
+                                    overlay.style.height = '100%';
+                                    //overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.3)';  // Optional: adds a transparent overlay effect
+                                    overlay.style.cursor = 'pointer';  // Indicates that it's clickable
+
+                                    // Attach an event listener to handle clicks
+                                    overlay.addEventListener('click', show_alert);
+
+                                    // Append both elements to a container
+                                    var container = document.createElement('div');
+                                    container.style.position = 'relative';  // Make the container relative to position the overlay
+                                    container.style.width = iframe.style.width;
+                                    container.style.height = iframe.style.height;
+
+                                    container.appendChild(iframe);
+                                    container.appendChild(overlay);
+
+                                    gameGrid.appendChild(container);
                                 }
 
                                 loopCounter += 1;
