@@ -361,10 +361,14 @@ if (isset($_GET['username']) && isset($_GET['start-date']) && isset($_GET['end-d
                                     // Create and insert the iframe
                                     var iframe = document.createElement('iframe');
                                     iframe.src = 'https://mutsuntsai.github.io/fen-tool/gen/?fen=' + game.fen;  // Replace with your iframe source
-                                    iframe.style.border = 'none';
-                                    iframe.style.width = '354px';
-                                    iframe.style.height = '354px';
-                                    iframe.style.position = 'relative';  // Ensure the iframe is positioned correctly
+                                    iframe.style.border = 'none';  // Remove default iframe border
+                                    iframe.style.width = '354px';  // Set width exactly matching container's size
+                                    iframe.style.height = '354px';  // Set height exactly matching container's size
+                                    iframe.style.position = 'absolute';  // Position iframe absolutely
+                                    iframe.style.top = '0px';  // Offset iframe to bring it behind the top border
+                                    iframe.style.left = '0px';  // Offset iframe to bring it behind the left border
+                                    //iframe.style.right = '-20px';  // Offset iframe to hide it behind the right border
+                                    //iframe.style.bottom = '-20px';  // Offset iframe to hide it behind the bottom border
 
                                     // Create and insert the overlay div
                                     var overlay = document.createElement('div');
@@ -373,7 +377,6 @@ if (isset($_GET['username']) && isset($_GET['start-date']) && isset($_GET['end-d
                                     overlay.style.left = '0';
                                     overlay.style.width = '100%';
                                     overlay.style.height = '100%';
-                                    //overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.3)';  // Optional: adds a transparent overlay effect
                                     overlay.style.cursor = 'pointer';  // Indicates that it's clickable
 
                                     // Attach an event listener to handle clicks
@@ -382,9 +385,16 @@ if (isset($_GET['username']) && isset($_GET['start-date']) && isset($_GET['end-d
                                     // Append both elements to a container
                                     var container = document.createElement('div');
                                     container.style.position = 'relative';  // Make the container relative to position the overlay
-                                    container.style.width = iframe.style.width;
-                                    container.style.height = iframe.style.height;
+                                    container.style.width = '354px';  // Set width to match the iframe's visible area
+                                    container.style.height = '354px';  // Set height to match the iframe's visible area
 
+                                    // Add border and rounded corners
+                                    container.style.border = '6px solid #2EB432';  // Set border color and thickness
+                                    container.style.borderRadius = '18px';  // Rounded corners
+                                    container.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1)';  // Subtle shadow for a lifted effect
+                                    container.style.overflow = 'hidden';  // Ensure iframe stays within the rounded border
+
+                                    // Append elements to the container
                                     container.appendChild(iframe);
                                     container.appendChild(overlay);
 
