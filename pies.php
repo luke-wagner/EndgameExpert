@@ -329,7 +329,8 @@ if (isset($_GET['username']) && isset($_GET['start-date']) && isset($_GET['end-d
         <?php
         $chartIndex = 0;
         foreach ($data as $descriptor => $outcomes) {
-            echo "<details>";
+            // Add the descriptor as a data attribute to <details>
+            echo "<details data-descriptor='$descriptor'>";
             echo "<summary>View Games for $descriptor</summary>";
             echo "<div class='game-grid' id='gameGrid$chartIndex'></div>";
             echo "</details>";
@@ -344,6 +345,51 @@ if (isset($_GET['username']) && isset($_GET['start-date']) && isset($_GET['end-d
             details.addEventListener('toggle', function() {
                 if (this.open) {
                     let gameGrid = document.getElementById('gameGrid' + index);
+                    let descriptor = this.getAttribute('data-descriptor'); // Get the descriptor from the data attribute
+
+                    var loopCounter = 0
+
+                    fetch('get_games.php?descriptor=' + descriptor)
+                        .then(response => response.json())  // Parse JSON from PHP response
+                        .then(data => {
+                            data.forEach(game => {
+                                if (loopCounter < 18){
+                                    let iframe = document.createElement('iframe');
+                                    //var testFen = '2K5/P7/3kN2p/3n3P/8/8/8/8'
+                                    iframe.src = 'https://mutsuntsai.github.io/fen-tool/gen/?fen=' + game.fen;
+                                    iframe.style.border = 'none';
+                                    iframe.style.width = '354px';
+                                    iframe.style.height = '354px';
+                                    gameGrid.appendChild(iframe);
+                                }
+
+                                loopCounter += 1;
+
+                                //console.log(game.game_link);
+                                // Create new elements for each entry
+                                //const gameContainer = document.createElement('div');
+                                //gameContainer.classList.add('game-item');
+
+                                //const fenText = document.createElement('p');
+                                //fenText.textContent = `FEN: ${game.fen}`;
+
+                                //const link = document.createElement('a');
+                                //link.href = game.game_link;
+                                //link.textContent = "View Game";
+
+                                // Append elements to the container
+                                //gameContainer.appendChild(fenText);
+                                //gameContainer.appendChild(link);
+
+                                // Append container to the DOM (adjust selector as needed)
+                                //document.getElementById('games-list').appendChild(gameContainer);
+                            });
+                        })
+                        .catch(error => {
+                            console.error('Error fetching games:', error);
+                        });
+                      
+                    /*
                     if (!gameGrid.hasChildNodes()) { // Only load if not already loaded
                         for (let i = 0; i < 6; i++) {
                             let iframe = document.createElement('iframe');
@@ -354,7 +400,9 @@ if (isset($_GET['username']) && isset($_GET['start-date']) && isset($_GET['end-d
                             iframe.style.height = '354px';
                             gameGrid.appendChild(iframe);
                         }
+                        console.log(`Games loaded for descriptor: ${descriptor}`); // Use descriptor for tracking
                     }
+                    */
                 }
             });
         });
