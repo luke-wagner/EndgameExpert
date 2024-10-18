@@ -178,6 +178,38 @@ if (isset($_GET['username']) && isset($_GET['start-date']) && isset($_GET['end-d
                 height: auto !important;
             }
 
+            .details-panel {
+                max-width: 1200px;
+                margin: 20px auto;
+                padding: 0 40px;
+            }
+
+            details {
+                margin-top: 20px;
+                background-color: #fff;
+                border-radius: 8px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                padding: 10px;
+            }
+
+            details summary {
+                font-weight: bold;
+                cursor: pointer;
+            }
+
+            .game-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 20px;
+                padding-top: 10px;
+            }
+
+            .game-embed {
+                text-align: center;
+                width:300px;
+                height:350px;
+            }
+
             @media (max-width: 768px) {
                 h1 {
                     font-size: 2em;
@@ -233,7 +265,7 @@ if (isset($_GET['username']) && isset($_GET['start-date']) && isset($_GET['end-d
             if (!isset($data[$descriptor])) {
                 $data[$descriptor] = ['win' => 0, 'draw' => 0, 'lose' => 0];
             }
-            
+
             if ($outcome == 1) {
                 $data[$descriptor]['win'] = $count;
             } elseif ($outcome == 0) {
@@ -277,7 +309,7 @@ if (isset($_GET['username']) && isset($_GET['start-date']) && isset($_GET['end-d
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: true, // Maintain aspect ratio for pie charts
+                    maintainAspectRatio: true,
                     plugins: {
                         legend: {
                             position: 'top',
@@ -287,8 +319,30 @@ if (isset($_GET['username']) && isset($_GET['start-date']) && isset($_GET['end-d
             });
         </script>";
         echo "</div>";
-        
+
         $chartIndex++; // Increment chart index to avoid ID duplication
+    }
+    ?>
+    </div>
+
+    <!-- Collapsible Panels -->
+    <div class="details-panel">
+    <?php
+    $chartIndex = 0;
+    foreach ($data as $descriptor => $outcomes) {
+        echo "<details>";
+        echo "<summary>View Games for $descriptor</summary>";
+        echo "<div class='game-grid'>";
+        // Example embedded games (replace game_id with real IDs)
+        for ($i = 0; $i < 6; $i++) {
+            echo "<div class='game-embed'>";
+            echo '<iframe id="12298791" allowtransparency="true" frameborder="0" scrolling="no" style="width:100%;height:100%;border:none;" src="//www.chess.com/emboard?id=12298791"></iframe>';
+            echo "</div>";
+        }
+        echo "</div>";
+        echo "</details>";
+
+        $chartIndex++;
     }
     ?>
     </div>
