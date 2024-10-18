@@ -206,8 +206,8 @@ if (isset($_GET['username']) && isset($_GET['start-date']) && isset($_GET['end-d
 
             .game-embed {
                 text-align: center;
-                width:300px;
-                height:350px;
+                width:354px;
+                height:354px;
             }
 
             @media (max-width: 768px) {
@@ -283,69 +283,82 @@ if (isset($_GET['username']) && isset($_GET['start-date']) && isset($_GET['end-d
     <h1>Game Outcome Stats</h1>
 
     <div class="chart-container">
-    <?php
-    // 4. Generate the HTML for each pie chart
-    $chartIndex = 0; // To ensure unique chart IDs
-    foreach ($data as $descriptor => $outcomes) {
-        $win = $outcomes['win'];
-        $draw = $outcomes['draw'];
-        $lose = $outcomes['lose'];
-        $chartId = "chart" . $chartIndex;
+        <?php
+        $chartIndex = 0; // To ensure unique chart IDs
+        foreach ($data as $descriptor => $outcomes) {
+            $win = $outcomes['win'];
+            $draw = $outcomes['draw'];
+            $lose = $outcomes['lose'];
+            $chartId = "chart" . $chartIndex;
 
-        echo "<div class='chart-box'>";
-        echo "<h2>$descriptor</h2>";
-        echo "<canvas id='$chartId'></canvas>";
-        echo "<script>
-            var ctx$chartIndex = document.getElementById('$chartId').getContext('2d');
-            new Chart(ctx$chartIndex, {
-                type: 'pie',
-                data: {
-                    labels: ['Wins ($win)', 'Draws ($draw)', 'Losses ($lose)'],
-                    datasets: [{
-                        data: [$win, $draw, $lose],
-                        backgroundColor: ['#4caf50', '#ffeb3b', '#f44336'],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    plugins: {
-                        legend: {
-                            position: 'top',
+            echo "<div class='chart-box'>";
+            echo "<h2>$descriptor</h2>";
+            echo "<canvas id='$chartId'></canvas>";
+            echo "<script>
+                var ctx$chartIndex = document.getElementById('$chartId').getContext('2d');
+                new Chart(ctx$chartIndex, {
+                    type: 'pie',
+                    data: {
+                        labels: ['Wins ($win)', 'Draws ($draw)', 'Losses ($lose)'],
+                        datasets: [{
+                            data: [$win, $draw, $lose],
+                            backgroundColor: ['#4caf50', '#ffeb3b', '#f44336'],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            }
                         }
                     }
-                }
-            });
-        </script>";
-        echo "</div>";
+                });
+            </script>";
+            echo "</div>";
 
-        $chartIndex++; // Increment chart index to avoid ID duplication
-    }
-    ?>
+            $chartIndex++; // Increment chart index to avoid ID duplication
+        }
+        ?>
     </div>
 
     <!-- Collapsible Panels -->
     <div class="details-panel">
-    <?php
-    $chartIndex = 0;
-    foreach ($data as $descriptor => $outcomes) {
-        echo "<details>";
-        echo "<summary>View Games for $descriptor</summary>";
-        echo "<div class='game-grid'>";
-        // Example embedded games (replace game_id with real IDs)
-        for ($i = 0; $i < 6; $i++) {
-            echo "<div class='game-embed'>";
-            echo '<iframe id="12298791" allowtransparency="true" frameborder="0" scrolling="no" style="width:100%;height:100%;border:none;" src="//www.chess.com/emboard?id=12298791"></iframe>';
-            echo "</div>";
+        <?php
+        $chartIndex = 0;
+        foreach ($data as $descriptor => $outcomes) {
+            echo "<details>";
+            echo "<summary>View Games for $descriptor</summary>";
+            echo "<div class='game-grid' id='gameGrid$chartIndex'></div>";
+            echo "</details>";
+            $chartIndex++;
         }
-        echo "</div>";
-        echo "</details>";
-
-        $chartIndex++;
-    }
-    ?>
+        ?>
     </div>
+
+    <script>
+        // Function to inject iframes into the game grid when details are opened
+        document.querySelectorAll('details').forEach((details, index) => {
+            details.addEventListener('toggle', function() {
+                if (this.open) {
+                    let gameGrid = document.getElementById('gameGrid' + index);
+                    if (!gameGrid.hasChildNodes()) { // Only load if not already loaded
+                        for (let i = 0; i < 6; i++) {
+                            let iframe = document.createElement('iframe');
+                            var testFen = '2K5/P7/3kN2p/3n3P/8/8/8/8'
+                            iframe.src = 'https://mutsuntsai.github.io/fen-tool/gen/?fen=' + testFen;
+                            iframe.style.border = 'none';
+                            iframe.style.width = '354px';
+                            iframe.style.height = '354px';
+                            gameGrid.appendChild(iframe);
+                        }
+                    }
+                }
+            });
+        });
+    </script>
 
     </body>
     </html>
