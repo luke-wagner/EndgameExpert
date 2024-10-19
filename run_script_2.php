@@ -5,9 +5,9 @@
     //$end_date = escapeshellarg($_GET['end-date']);
 
     // Define the command to call the Python script with arguments
-    //$command1 = "python download_files.py $ccom_username $start_date $end_date";
-    $command2 = "python clear_db.py";
-    //$command3 = "python parse_files.py $ccom_username";
+    //$command1 = "python3 download_files.py $ccom_username $start_date $end_date";
+    $command2 = "python3 clear_db.py";
+    //$command3 = "python3 parse_files.py $ccom_username";
 
     // Execute the command and capture the output
     //$output1 = shell_exec($command1);

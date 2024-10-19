@@ -74,8 +74,10 @@ if (isset($_GET['username']) && isset($_GET['start-date']) && isset($_GET['end-d
             // Send an AJAX request to trigger the PHP script
             window.onload = function() {
                 var ccom_username = <?php echo $ccom_username; ?>;
+                var start_date = <?php echo $start_date; ?>;
+                var end_date = <?php echo $end_date; ?>;
 
-                fetch('run_script_1.php?username=' + ccom_username)
+                fetch('run_script_1.php?username=' + ccom_username + '&start-date=' + start_date + '&end-date=' + end_date)
                     .then(response => response.text())
                     .then(data => {
                         // When the PHP script finishes, hide the loading message and show the content
@@ -87,7 +89,7 @@ if (isset($_GET['username']) && isset($_GET['start-date']) && isset($_GET['end-d
 
                     })
                     .catch(error => console.error('Error:', error));
-                    
+                
                 fetch('run_script_2.php')
                     .then(response => response.text())
                     .then(data => {
@@ -110,7 +112,6 @@ if (isset($_GET['username']) && isset($_GET['start-date']) && isset($_GET['end-d
                         window.location.href = window.location.pathname; // Strip away the extra params in URL
                     })
                     .catch(error => console.error('Error:', error));
-
             };
         </script>
     </body>
