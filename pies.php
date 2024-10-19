@@ -343,8 +343,9 @@ if (isset($_GET['username']) && isset($_GET['start-date']) && isset($_GET['end-d
     </div>
 
     <script>
-        function show_alert(){
-            alert('You clicked on a chess board!');
+        function open_link(link){
+            console.log(link);
+            window.open(link, '_blank').focus();
         }
 
         // Function to inject iframes into the game grid when details are opened
@@ -383,7 +384,7 @@ if (isset($_GET['username']) && isset($_GET['start-date']) && isset($_GET['end-d
                                     overlay.style.cursor = 'pointer';  // Indicates that it's clickable
 
                                     // Attach an event listener to handle clicks
-                                    overlay.addEventListener('click', show_alert);
+                                    overlay.addEventListener('click', function() { open_link(game.game_link); });
 
                                     // Append both elements to a container
                                     var container = document.createElement('div');
