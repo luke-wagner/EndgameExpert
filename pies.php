@@ -389,16 +389,30 @@ if (isset($_GET['username']) && isset($_GET['start-date']) && isset($_GET['end-d
                                     container.style.height = '354px';  // Set height to match the iframe's visible area
 
                                     // Add border and rounded corners
-                                    container.style.border = '6px solid #2EB432';  // Set border color and thickness
+                                    //container.style.border = '6px solid #2EB432';  // Set border color and thickness
                                     container.style.borderRadius = '18px';  // Rounded corners
                                     container.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1)';  // Subtle shadow for a lifted effect
                                     container.style.overflow = 'hidden';  // Ensure iframe stays within the rounded border
+                                    container.style.top = '-4px';
+                                    container.style.left = '-4px';
+                                    container.style.zIndex = '1';
+
+                                    var container2 = document.createElement('div');
+                                    container2.style.width = '345px';  // Set width to match the iframe's visible area
+                                    container2.style.height = '345px';  // Set height to match the iframe's visible area
+                                    container2.style.border = '6px solid #2EB432';  // Set border color and thickness
+                                    container2.style.borderRadius = '18px';  // Rounded corners
+                                    container2.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1)';  // Subtle shadow for a lifted effect
+                                    container2.style.overflow = 'hidden';  // Ensure iframe stays within the rounded border
+                                    container2.style.zIndex = '2';
 
                                     // Append elements to the container
                                     container.appendChild(iframe);
                                     container.appendChild(overlay);
 
-                                    gameGrid.appendChild(container);
+                                    container2.appendChild(container);
+
+                                    gameGrid.appendChild(container2);
                                 }
 
                                 loopCounter += 1;
