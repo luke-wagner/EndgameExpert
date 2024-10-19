@@ -246,11 +246,14 @@ if (isset($_GET['username']) && isset($_GET['start-date']) && isset($_GET['end-d
 
     // 2. Run your query to fetch game outcomes
     $sql = "
-        SELECT f.descriptor, gd.outcome, COUNT(*) AS count
-        FROM fens f
-        INNER JOIN game_data gd ON (gd.game_link = f.game_link)
-        WHERE f.descriptor <> ''
-        GROUP BY f.descriptor, gd.outcome
+    with a as (
+        select distinct game_link, descriptor from fens
+    )
+        select a.descriptor, gd.outcome, count(*) as count
+        from a
+        inner join game_data gd on (gd.game_link = a.game_link)
+        where a.descriptor <> ''
+        group by a.descriptor, gd.outcome
     ";
     $result = $conn->query($sql);
 
@@ -400,7 +403,14 @@ if (isset($_GET['username']) && isset($_GET['start-date']) && isset($_GET['end-d
                                     var container2 = document.createElement('div');
                                     container2.style.width = '345px';  // Set width to match the iframe's visible area
                                     container2.style.height = '345px';  // Set height to match the iframe's visible area
-                                    container2.style.border = '6px solid #2EB432';  // Set border color and thickness
+                                    console.log(game.outcome);
+                                    if (game.outcome == '1'){
+                                        container2.style.border = '6px solid #2EB432';  // Set border color and thickness
+                                    } else if (game.outcome == '-1') {
+                                        container2.style.border = '6px solid #F54133';  // Set border color and thickness
+                                    } else if (game.outcome == '0') {
+                                        container2.style.border = '6px solid #808080';  // Set border color and thickness
+                                    }
                                     container2.style.borderRadius = '18px';  // Rounded corners
                                     container2.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1)';  // Subtle shadow for a lifted effect
                                     container2.style.overflow = 'hidden';  // Ensure iframe stays within the rounded border
