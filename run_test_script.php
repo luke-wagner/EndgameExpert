@@ -1,6 +1,6 @@
 <?php
     // Define the command to call the Python script with arguments
-    $command1 = "python3 make-requests.py";
+    $command1 = "python3 send_test_request.py";
 
     // Execute the command and capture the output
     $output1 = shell_exec($command1);
