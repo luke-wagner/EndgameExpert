@@ -88,7 +88,11 @@ if (isset($_GET['username']) && isset($_GET['start-date']) && isset($_GET['end-d
                         //window.location.href = window.location.pathname; // Strip away the extra params in URL
 
                     })
-                    .catch(error => console.error('Error:', error));
+                    .catch(error => {
+                        console.error('Error:', error)
+                        console.log(error)
+                        document.getElementById('shell-data').innerHTML = data;
+                    });
 
                 /*
                 fetch('run_script_1.php?username=' + ccom_username + '&start-date=' + start_date + '&end-date=' + end_date)

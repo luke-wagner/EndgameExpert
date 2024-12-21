@@ -28,10 +28,10 @@ def send_request(url):
                 return json.loads(json_str)
             else:
                 print("Error:", response.text)
-                return []
+                return {}
         except Exception as e:
             print("Failed to fetch data:", str(e))
-            return []
+            return {}
     else:
         # Send a GET request to the URL
         session = requests.session()
@@ -42,7 +42,7 @@ def send_request(url):
             return response.json()
         else:
             print(f"Failed to fetch data: {response.status_code}")
-            return []
+            return {}
 
 if __name__ == "__main__":
     result = send_request("https://api.chess.com/pub/player/Hikaru") # Example API call
