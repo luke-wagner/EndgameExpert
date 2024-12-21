@@ -89,7 +89,7 @@ if (isset($_GET['username']) && isset($_GET['start-date']) && isset($_GET['end-d
 
                     })
                     .catch(error => console.error('Error:', error));
-                
+                /*
                 fetch('run_script_2.php')
                     .then(response => response.text())
                     .then(data => {
@@ -112,6 +112,7 @@ if (isset($_GET['username']) && isset($_GET['start-date']) && isset($_GET['end-d
                         window.location.href = window.location.pathname; // Strip away the extra params in URL
                     })
                     .catch(error => console.error('Error:', error));
+                */
             };
         </script>
     </body>
