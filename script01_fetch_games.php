@@ -4,6 +4,10 @@
     $start_date = escapeshellarg($_GET['start-date']);
     $end_date = escapeshellarg($_GET['end-date']);
 
+    // Try activating the virtual environment -- for DigitalOcean droplet
+    $output = shell_exec("source /var/www/venv/bin/activate");
+    echo $output;
+
     // Define the command to call the Python script with arguments
     $command1 = "python3 fetch_games.py $ccom_username $start_date $end_date";
 
