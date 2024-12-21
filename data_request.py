@@ -5,6 +5,7 @@
 #####################################################################################
 
 import requests
+import json
 
 from config import USING_PROXY, CCOM_USERNAME, CCOM_EMAIL
 
@@ -23,7 +24,8 @@ def send_request(url):
             response = requests.post(proxy_url, json=payload)
 
             if response.status_code == 200:
-                return response.json()
+                json_str = response.json()['data'] # when sent through the proxy, the json data becomes a string
+                return json.loads(json_str)
             else:
                 print("Error:", response.text)
                 return []
