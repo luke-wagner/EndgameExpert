@@ -77,7 +77,7 @@ if (isset($_GET['username']) && isset($_GET['start-date']) && isset($_GET['end-d
                 var start_date = <?php echo $start_date; ?>;
                 var end_date = <?php echo $end_date; ?>;
 
-                fetch('run_test_script.php')
+                fetch('script01_fetch_games.php?username=' + ccom_username + '&start-date=' + start_date + '&end-date=' + end_date)
                     .then(response => response.text())
                     .then(data => {
                         // When the PHP script finishes, hide the loading message and show the content
