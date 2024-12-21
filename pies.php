@@ -91,7 +91,7 @@ if (isset($_GET['username']) && isset($_GET['start-date']) && isset($_GET['end-d
                     .catch(error => {
                         console.error('Error:', error)
                         console.log(error)
-                        document.getElementById('shell-data').innerHTML = data;
+                        document.getElementById('shell-data').innerHTML = "Error: " + error.message;
                     });
 
                 /*
