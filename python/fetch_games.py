@@ -2,6 +2,8 @@ import sys
 from datetime import datetime
 import mysql.connector
 
+sys.path.append('../') # to include python files in the root directory
+
 from config import DB_USERNAME, DB_PWD
 import data_request as dr
 
