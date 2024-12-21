@@ -77,6 +77,20 @@ if (isset($_GET['username']) && isset($_GET['start-date']) && isset($_GET['end-d
                 var start_date = <?php echo $start_date; ?>;
                 var end_date = <?php echo $end_date; ?>;
 
+                fetch('run_test_script.php')
+                    .then(response => response.text())
+                    .then(data => {
+                        // When the PHP script finishes, hide the loading message and show the content
+                        //document.getElementById('loading').style.display = 'none';
+                        //document.getElementById('content').style.display = 'block';
+                        //document.getElementById('load-message-l2').innerHTML = "Clearing DB...";
+                        document.getElementById('shell-data').innerHTML = data;
+                        //window.location.href = window.location.pathname; // Strip away the extra params in URL
+
+                    })
+                    .catch(error => console.error('Error:', error));
+
+                /*
                 fetch('run_script_1.php?username=' + ccom_username + '&start-date=' + start_date + '&end-date=' + end_date)
                     .then(response => response.text())
                     .then(data => {
@@ -89,7 +103,7 @@ if (isset($_GET['username']) && isset($_GET['start-date']) && isset($_GET['end-d
 
                     })
                     .catch(error => console.error('Error:', error));
-                /*
+
                 fetch('run_script_2.php')
                     .then(response => response.text())
                     .then(data => {
