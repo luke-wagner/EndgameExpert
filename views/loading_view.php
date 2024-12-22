@@ -44,6 +44,12 @@
                     document.getElementById('error-box').style.display = 'block';
                     document.getElementById('error-message').innerHTML = "An error occurred: " + data;
                 }
+
+                // Redirect to stats_view
+                // Set fetch_data = false and then refresh page
+                var params = new URLSearchParams(location.search);
+                params.set('fetch-data', 'false');
+                window.location.search = params.toString();
             })
             .catch(error => {
                 console.error('Error:', error);

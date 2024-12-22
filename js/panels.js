@@ -10,11 +10,19 @@ document.querySelectorAll('details').forEach((details, index) => {
             let gameGrid = document.getElementById('gameGrid' + index);
             let descriptor = this.getAttribute('data-descriptor'); // Get the descriptor from the data attribute
             
+            var queryString = window.location.search;
+            var urlParams = new URLSearchParams(queryString);
+            var username = urlParams.get('username')
+            var start_date = urlParams.get('start-date')
+            var end_date = urlParams.get('end-date')
+
             var loopCounter = 0;
 
-            fetch('get_games.php?descriptor=' + descriptor)
+            fetch('../scripts/script02_games_by_descriptor.php?descriptor=' + descriptor + "&username=" + username + "&start_date="+ start_date + "&end_date=" + end_date)
                 .then(response => response.json())  // Parse JSON from PHP response
                 .then(data => {
+                    console.log(data);
+
                     data.forEach(game => {
                         if (loopCounter < 18){
                             // Create and insert the iframe

@@ -95,3 +95,21 @@ details summary {
         height: 250px !important;
     }
 }
+
+.no-data {
+    text-align: center;
+    background-color: #FFF9E6;
+    color: #FF8C00;
+    border: 1px solid #FF8C00;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-size: 1.0em;
+    width: 30%;
+    margin: 0 auto; /* Center horizontally */
+}
+
+.no-data p {
+    margin: 0;
+    font-weight: 500;
+}

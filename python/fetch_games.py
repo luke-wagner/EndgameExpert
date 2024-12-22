@@ -39,8 +39,8 @@ def parse_month_data(json, user_player_name, month, year):
         outcome = get_outcome(game_result)
 
         # Insert into game_data table
-        sql = "INSERT INTO game_data (game_link, player_color, outcome, result, month, year) VALUES (%s, %s, %s, %s, %s, %s)"
-        vals = (game_link, player_color, outcome, game_result, month, year)
+        sql = "INSERT INTO game_data (player_name, game_link, player_color, outcome, result, month, year) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+        vals = (user_player_name, game_link, player_color, outcome, game_result, month, year)
         try:
             cursor.execute(sql, vals)
             db.commit()
