@@ -1,6 +1,6 @@
 <?php
     $filename = basename(__FILE__, '.php'); 
-    $outfilepath = '../out/' . $filename . '.log';
+    $outfilepath = realpath(dirname(__FILE__) . '/../out') . '/' . $filename . '.log';
 
     // Get form data
     $ccom_username = escapeshellarg($_GET['username']);
