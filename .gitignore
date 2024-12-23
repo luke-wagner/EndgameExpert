@@ -4,4 +4,4 @@ downloads
 config.py
 .env
 backup
-out
+out/*
