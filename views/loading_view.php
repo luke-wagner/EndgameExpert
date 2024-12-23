@@ -32,26 +32,32 @@
         var start_date = <?php echo $start_date; ?>;
         var end_date = <?php echo $end_date; ?>;
 
+        // Set initial status message
+        document.getElementById('status-message').innerHTML = "Fetching game data...";
+
         fetch('scripts/script01_fetch_games.php?username=' + ccom_username + '&start-date=' + start_date + '&end-date=' + end_date)
             .then(response => response.text())
             .then(data => {
-                // Update status message
-                document.getElementById('status-message').innerHTML = "Files downloaded";
-
                 // Error messages from script execution will be passed over stdout, therefore if any data is 
                 // returned, display this as an error message
                 if (data != ""){
+                    // Error from script execution
                     document.getElementById('error-box').style.display = 'block';
                     document.getElementById('error-message').innerHTML = "An error occurred: " + data;
+                } else {    
+                    // Update status message
+                    document.getElementById('status-message').innerHTML = "Game data fetched";
+
+                    // Redirect to stats_view
+                    // Set fetch_data = false and then refresh page
+                    var params = new URLSearchParams(location.search);
+                    params.set('fetch-data', 'false');
+                    window.location.search = params.toString();
                 }
 
-                // Redirect to stats_view
-                // Set fetch_data = false and then refresh page
-                var params = new URLSearchParams(location.search);
-                params.set('fetch-data', 'false');
-                window.location.search = params.toString();
             })
             .catch(error => {
+                // Error from HTTP request
                 console.error('Error:', error);
                 document.getElementById('error-box').style.display = 'block';
                 document.getElementById('error-message').innerHTML = "An error occurred: " + error.message;
