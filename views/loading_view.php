@@ -49,10 +49,14 @@
                     document.getElementById('status-message').innerHTML = "Game data fetched";
 
                     // Redirect to stats_view
-                    // Set fetch_data = false and then refresh page
-                    var params = new URLSearchParams(location.search);
-                    params.set('fetch-data', 'false');
-                    window.location.search = params.toString();
+                    // Delete fetch_data param and then refresh page
+                    // Also using replaceState so that when back arrow is clicked, it goes back to launch page
+                    var url = new URL(window.location.href);
+                    var queryParams = new URLSearchParams(url.search);
+                    queryParams.delete('fetch-data'); // delete this param
+                    url.search = queryParams.toString();
+                    history.replaceState(null, null, url.toString());
+                    location.reload();
                 }
 
             })
