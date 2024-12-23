@@ -1,6 +1,6 @@
 <?php
 // Include the database functions
-require_once __DIR__ . '..\..\helpers\database_connector.php';
+require_once realpath(path: __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'helpers' . DIRECTORY_SEPARATOR . 'database_connector.php');
 
 if (isset($_GET['username']) && isset($_GET['start-date']) && isset($_GET['end-date'])) {
     // Get form data
