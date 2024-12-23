@@ -22,7 +22,7 @@ function fetch_games_by_descriptor($username, $start_date, $end_date, $descripto
     with a as (
         select game_link, MAX(move_number) as move_number
         from fens
-        where descriptor like '$descriptor'
+        where descriptor like $descriptor
         and game_link in (
 			SELECT DISTINCT game_link FROM game_data
 			WHERE player_name like $username	-- username
