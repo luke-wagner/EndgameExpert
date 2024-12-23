@@ -8,12 +8,8 @@
     $start_date = escapeshellarg($_GET['start-date']);
     $end_date = escapeshellarg($_GET['end-date']);
 
-    // Try activating the virtual environment -- for DigitalOcean droplet
-    //$output = shell_exec("source /var/www/venv/bin/activate");
-    //echo $output;
-
     // Define the command to call the Python script with arguments
-    $command1 = "/var/www/venv/bin/python3 $python_script $ccom_username $start_date $end_date 2>&1 1> $outfilepath";
+    $command1 = "python3 $python_script $ccom_username $start_date $end_date 2>&1 1> $outfilepath";
 
     // Execute the command and capture the output
     $output1 = shell_exec($command1);
