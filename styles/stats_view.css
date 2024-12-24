@@ -37,6 +37,8 @@ h2 {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     text-align: center;
     transition: transform 0.2s ease;
+    width: 300px; /* Fixed width for each chart */
+    margin: 20px auto; /* Center align and add spacing */
 }
 
 .chart-box:hover {
@@ -45,8 +47,8 @@ h2 {
 }
 
 .chart-box canvas {
-    width: 100% !important;
-    height: auto !important;
+    max-width: 100%; /* Ensure the chart scales properly */
+    max-height: 300px; /* Fixed height for the chart */
 }
 
 .details-panel {
@@ -106,10 +108,31 @@ details summary {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     font-size: 1.0em;
     width: 30%;
-    margin: 0 auto; /* Center horizontally */
+    margin: 0 auto;
 }
 
 .no-data p {
     margin: 0;
     font-weight: 500;
+}
+
+.board-1 { 
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 20vw;
+    height: auto;
+    z-index: -1;
+    opacity: 0.9;
+}
+
+.board-2 {
+    position: absolute;
+    top: 0%;
+    left: 85%;
+    transform: translateX(-50%);
+    width: 80vw;
+    height: auto;
+    z-index: -1;
+    opacity: 0.4;
 }

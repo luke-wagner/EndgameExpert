@@ -28,13 +28,16 @@ if (isset($_GET['username']) && isset($_GET['start-date']) && isset($_GET['end-d
 <body>
     <h1>Game Statistics</h1>
 
+    <img class="board-1" src="../img/board-cropped.png">
+    <img class="board-2" src="../img/board.png">
+
     <?php if (!empty($data)): ?>
         <!-- Pie Charts -->
         <div class="chart-container">
             <?php foreach ($data as $descriptor => $outcomes): ?>
                 <div class="chart-box">
                     <h2><?php echo htmlspecialchars($descriptor); ?></h2>
-                    <canvas id="chart-<?php echo htmlspecialchars($descriptor); ?>"></canvas>
+                    <canvas id="chart-<?php echo htmlspecialchars($descriptor); ?>" width="300" height="300"></canvas>
                 </div>
             <?php endforeach; ?>
         </div>
