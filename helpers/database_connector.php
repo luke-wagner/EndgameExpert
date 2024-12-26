@@ -1,7 +1,8 @@
 <?php
 
 function connect_to_db() {
-    $env = parse_ini_file(__DIR__ . '/../.env');
+    $envpath = realpath(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '.env');
+    $env = parse_ini_file(filename: $envpath);
     $db_username = $env['DB_USERNAME'];
     $db_pwd = $env['DB_PWD'];
     $servername = "localhost";

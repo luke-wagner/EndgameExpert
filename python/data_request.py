@@ -6,6 +6,9 @@
 
 import requests
 import json
+import sys
+
+sys.path.append('../') # to include python files in the root directory
 
 from config import USING_PROXY, CCOM_USERNAME, CCOM_EMAIL
 

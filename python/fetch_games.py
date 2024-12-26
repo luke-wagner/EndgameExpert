@@ -6,6 +6,7 @@ sys.path.append('../') # to include python files in the root directory
 
 from config import DB_USERNAME, DB_PWD
 import data_request as dr
+from categorize_game import categorize_game
 
 db = mysql.connector.connect(
   host="localhost",
@@ -31,6 +32,7 @@ def get_outcome(result):
 def parse_month_data(json, user_player_name, month, year):
     for game in json["games"]:
         game_link = game["url"]
+        pgn = game["pgn"]
         white_player = game["white"]["username"]
         black_player = game["black"]["username"]
         player_color = 'W' if user_player_name == white_player else 'B'
@@ -48,15 +50,7 @@ def parse_month_data(json, user_player_name, month, year):
             pass
 
         # Insert into fens table
-        # Placeholder data for now
-        final_fen = game["fen"]
-        sql = "INSERT INTO fens (game_link, move_number, fen, descriptor) VALUES (%s, %s, %s, %s)"
-        vals = (game_link, 0, final_fen, 'QvR')
-        try:
-            cursor.execute(sql, vals)
-            db.commit()
-        except:
-            pass
+        categorize_game(pgn, player_color, game_link)
 
 if __name__ == "__main__":
     # Capture arguments passed from PHP

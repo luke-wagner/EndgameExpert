@@ -1,5 +1,15 @@
-def categorize_pos(player_color, pieces):
-    descriptor = ''
+import re
+
+def categorize_pos(player_color, fen):
+    def get_pieces(fen):
+        pieces = fen.split()[0]
+        pieces = re.findall('[a-z,A-Z]', pieces)
+        pieces.sort()
+        return pieces
+
+    pieces = get_pieces(fen)
+
+    descriptor = None
 
     if (player_color == 'W' and pieces == ['K', 'Q', 'k']) or (
         player_color == 'B' and pieces == ['K', 'k', 'q']):
