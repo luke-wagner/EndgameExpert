@@ -27,8 +27,17 @@ if (isset($_GET['username']) && isset($_GET['start-date']) && isset($_GET['end-d
 </head>
 <body>
     <h1>Stats for <?= trim($ccom_username, '"\'') ?></h1>
-    <h2>Timeframe: (<?= str_replace('-', '/', trim($start_date, '"\'')) ?> - <?= str_replace('-', '/', trim($end_date, '"\'')) ?>)</h2>
-
+    <div class="timeframe-container">
+        <form id="dateForm" action="../scripts/script03_update_timeframe.php" method="POST">
+            <input type="hidden" name="username" value="<?= trim($ccom_username, '"\'') ?>">
+            <label>Timeframe:</label>
+            <input type="date" name="start-date" value="<?= trim($start_date, '"\'') ?>" required>
+            <span>to</span>
+            <input type="date" name="end-date" value="<?= trim($end_date, '"\'') ?>" required>
+            <button type="submit">Update</button>
+        </form>
+    </div>
+    
     <img class="board-1" src="../img/board-cropped.png">
     <img class="board-2" src="../img/board.png">
 

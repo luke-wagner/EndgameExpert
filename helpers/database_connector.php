@@ -15,6 +15,51 @@ function connect_to_db() {
     return $conn;
 }
 
+function create_new_session() {
+    $conn = connect_to_db();
+
+    try {
+        // Prepare and execute the insert query
+        $sql = "INSERT INTO `session` () VALUES ()";
+        if ($conn->query($sql) === TRUE) {
+            // Get the last inserted ID
+            $sessionId = $conn->insert_id;
+    
+            // Return the session ID
+            return $sessionId;
+        } else {
+            throw new Exception("Error inserting session: " . $conn->error);
+        }
+    } catch (Exception $e) {
+        // Handle errors
+        echo $e->getMessage();
+        exit;
+    } finally {
+        // Close the connection
+        $conn->close();
+    }
+}
+
+function get_min_date_for_user($username){
+    $conn = connect_to_db();
+
+    // SQL query to fetch data
+    $sql = "SELECT MIN(CONCAT(year, month)) as min_date FROM game_data WHERE player_name = '$username'";
+
+    $result = $conn->query($sql);
+    return $result->fetch_assoc();
+}
+
+function get_max_date_for_user($username){
+    $conn = connect_to_db();
+
+    // SQL query to fetch data
+    $sql = "SELECT MAX(CONCAT(year, month)) as max_date FROM game_data WHERE player_name = '$username'";
+
+    $result = $conn->query($sql);
+    return $result->fetch_assoc();
+}
+
 function fetch_games_by_descriptor($username, $start_date, $end_date, $descriptor){
     $conn = connect_to_db();
 
