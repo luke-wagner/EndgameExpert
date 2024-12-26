@@ -40,6 +40,46 @@ function create_new_session() {
     }
 }
 
+// Insert/update session data
+// This is used to keep track of which data has already been processed
+function insert_session_data($session_id, $username, $start_date, $end_date) {
+    $conn = connect_to_db();
+
+    try {
+        // Prepare the insert query
+        $sql = "
+        INSERT INTO session_data (session_id, username, min_date, max_date)
+        VALUES (?, ?, ?, ?)
+        ON DUPLICATE KEY UPDATE
+            min_date = VALUES(min_date),
+            max_date = VALUES(max_date);
+        ";
+
+        $stmt = $conn->prepare($sql);
+        if (!$stmt) {
+            throw new Exception("Error preparing statement: " . $conn->error);
+        }
+
+        // Bind the parameters
+        $stmt->bind_param("isss", $session_id, $username, $start_date, $end_date);
+
+        // Execute the statement
+        if ($stmt->execute()) {
+            echo "Insertion successful";
+        } else {
+            throw new Exception("Error executing statement: " . $stmt->error);
+        }
+    } catch (Exception $e) {
+        // Handle errors
+        echo $e->getMessage();
+        exit;
+    } finally {
+        // Close the statement and connection
+        $stmt->close();
+        $conn->close();
+    }
+}
+
 function get_min_date_for_user($username){
     $conn = connect_to_db();
 
