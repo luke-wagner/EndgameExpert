@@ -26,7 +26,8 @@ if (isset($_GET['username']) && isset($_GET['start-date']) && isset($_GET['end-d
     <link rel="stylesheet" href="../styles/stats_view.css">
 </head>
 <body>
-    <h1>Game Statistics</h1>
+    <h1>Stats for <?= trim($ccom_username, '"\'') ?></h1>
+    <h2>Timeframe: (<?= str_replace('-', '/', trim($start_date, '"\'')) ?> - <?= str_replace('-', '/', trim($end_date, '"\'')) ?>)</h2>
 
     <img class="board-1" src="../img/board-cropped.png">
     <img class="board-2" src="../img/board.png">

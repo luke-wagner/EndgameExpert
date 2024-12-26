@@ -19,13 +19,15 @@ h2 {
     font-weight: 500;
     color: #666;
     margin-bottom: 10px;
+    text-align: center;
 }
 
 .chart-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 30px;
-    padding: 40px;
+    gap: 10px;
+    padding-left: 40px;
+    padding-right: 40px;
     max-width: 1200px;
     margin: 0 auto;
 }
@@ -52,7 +54,7 @@ h2 {
 }
 
 .details-panel {
-    max-width: 1200px;
+    width: 90%;
     margin: 20px auto;
     padding: 0 40px;
 }
