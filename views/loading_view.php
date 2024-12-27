@@ -75,7 +75,7 @@
                     queryParams.delete('fetch-data'); // delete this param
                     url.search = queryParams.toString();
                     history.replaceState(null, null, url.toString());
-                    location.reload();
+                    window.location.reload();
                 }
 
             })

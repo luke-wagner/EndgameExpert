@@ -30,13 +30,16 @@ try {
                      'start-date=' . urlencode($start_date) . '&' .
                      'end-date=' . urlencode($end_date);
 
-
-    //echo $redirect_url;
-    header('Location: ../'.$redirect_url);
+    // Output JavaScript to update URL and reload
+    echo "const newUrl = '../" . $redirect_url . "'; 
+          history.replaceState(null, '', newUrl); 
+          window.location.reload();";
+    exit();
 } catch (PDOException $e) {
     // Handle database errors
     error_log("Database Error: " . $e->getMessage());
-    header('Location: error.php');
+    echo "history.replaceState(null, '', 'error.php'); 
+          window.location.reload();";
     exit();
 }
 ?>

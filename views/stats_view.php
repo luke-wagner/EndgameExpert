@@ -4,6 +4,7 @@ require_once realpath(path: __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEP
 
 if (isset($_GET['username']) && isset($_GET['start-date']) && isset($_GET['end-date'])) {
     // Get form data
+    $session_id = escapeshellarg($_GET['session']);
     $ccom_username = escapeshellarg($_GET['username']);
     $start_date = escapeshellarg($_GET['start-date']);
     $end_date = escapeshellarg($_GET['end-date']);
@@ -28,7 +29,7 @@ if (isset($_GET['username']) && isset($_GET['start-date']) && isset($_GET['end-d
 <body>
     <h1>Stats for <?= trim($ccom_username, '"\'') ?></h1>
     <div class="timeframe-container">
-        <form id="dateForm" action="../scripts/script03_update_timeframe.php" method="POST">
+        <form id="timeframe-form">
             <input type="hidden" name="session" value="">
             <input type="hidden" name="username" value="<?= trim($ccom_username, '"\'') ?>">
             <label>Timeframe:</label>
@@ -41,16 +42,6 @@ if (isset($_GET['username']) && isset($_GET['start-date']) && isset($_GET['end-d
     
     <img class="board-1" src="../img/board-cropped.png">
     <img class="board-2" src="../img/board.png">
-
-    <script>
-        // Get the session id from the URL
-        var url = new URL(window.location.href);
-        var queryParams = new URLSearchParams(url.search);
-        var session_id = queryParams.get('session') 
-        
-        // set session id in hidden input field
-        document.querySelector('input[name="session"]').value = session_id;
-    </script>
 
     <?php if (!empty($data)): ?>
         <!-- Pie Charts -->
@@ -102,5 +93,43 @@ if (isset($_GET['username']) && isset($_GET['start-date']) && isset($_GET['end-d
             <p>No data for this user and time period.</p>
         </div>
     <?php endif; ?>
+
+    <script>
+        // Get the session id from the URL
+        var url = new URL(window.location.href);
+        var queryParams = new URLSearchParams(url.search);
+        var session_id = queryParams.get('session') 
+        
+        // set session id in hidden input field
+        document.querySelector('input[name="session"]').value = session_id;
+
+        // override default behavior of timeframe form; tie to custom handler function
+        var form = document.getElementById("timeframe-form");
+        function handleForm(event) { 
+            event.preventDefault(); // prevent window refresh
+             // Collect form data
+            var formData = new FormData(event.target);
+
+            // Make a fetch call with URL-encoded data
+            fetch('../scripts/script03_update_timeframe.php', {
+                method: 'POST',
+                body: new URLSearchParams(formData),
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            })
+            .then(response => response.text())
+            .then(data => {
+                console.log(data);
+
+                // Execute the JavaScript that was returned by PHP
+                eval(data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+        form.addEventListener('submit', handleForm);
+    </script>
 </body>
 </html>
