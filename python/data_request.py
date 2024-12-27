@@ -2,6 +2,13 @@
 # File: data_request.py
 #
 # Defines the method send_request, for making an API call and receiving back data
+#
+#
+# Example Usage:
+#   import data_request as dr
+#
+#   result = dr.send_request("https://api.chess.com/pub/player/Hikaru")
+#   print(result)
 #####################################################################################
 
 import requests
