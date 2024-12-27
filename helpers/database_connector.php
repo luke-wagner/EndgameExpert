@@ -80,21 +80,21 @@ function insert_session_data($session_id, $username, $start_date, $end_date) {
     }
 }
 
-function get_min_date_for_user($username){
+function get_min_date_for_user($session_id, $username){
     $conn = connect_to_db();
 
     // SQL query to fetch data
-    $sql = "SELECT MIN(CONCAT(year, month)) as min_date FROM game_data WHERE player_name = '$username'";
+    $sql = "select min_date from session_data where session_id = $session_id and username = '$username'";
 
     $result = $conn->query($sql);
     return $result->fetch_assoc();
 }
 
-function get_max_date_for_user($username){
+function get_max_date_for_user($session_id, $username){
     $conn = connect_to_db();
 
     // SQL query to fetch data
-    $sql = "SELECT MAX(CONCAT(year, month)) as max_date FROM game_data WHERE player_name = '$username'";
+    $sql = "select max_date from session_data where session_id = $session_id and username = '$username'";
 
     $result = $conn->query($sql);
     return $result->fetch_assoc();

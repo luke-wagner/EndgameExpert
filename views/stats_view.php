@@ -29,6 +29,7 @@ if (isset($_GET['username']) && isset($_GET['start-date']) && isset($_GET['end-d
     <h1>Stats for <?= trim($ccom_username, '"\'') ?></h1>
     <div class="timeframe-container">
         <form id="dateForm" action="../scripts/script03_update_timeframe.php" method="POST">
+            <input type="hidden" name="session" value="">
             <input type="hidden" name="username" value="<?= trim($ccom_username, '"\'') ?>">
             <label>Timeframe:</label>
             <input type="date" name="start-date" value="<?= trim($start_date, '"\'') ?>" required>
@@ -40,6 +41,16 @@ if (isset($_GET['username']) && isset($_GET['start-date']) && isset($_GET['end-d
     
     <img class="board-1" src="../img/board-cropped.png">
     <img class="board-2" src="../img/board.png">
+
+    <script>
+        // Get the session id from the URL
+        var url = new URL(window.location.href);
+        var queryParams = new URLSearchParams(url.search);
+        var session_id = queryParams.get('session') 
+        
+        // set session id in hidden input field
+        document.querySelector('input[name="session"]').value = session_id;
+    </script>
 
     <?php if (!empty($data)): ?>
         <!-- Pie Charts -->
