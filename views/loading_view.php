@@ -54,7 +54,8 @@
         // Set initial status message
         document.getElementById('status-message').innerHTML = "Fetching game data...";
 
-        fetch('scripts/script01_fetch_games.php?username=' + ccom_username + '&start-date=' + start_date + '&end-date=' + end_date)
+        fetch('scripts/script01_fetch_games.php?session=' +session_id + '&username=' + ccom_username + 
+        '&start-date=' + start_date + '&end-date=' + end_date)
             .then(response => response.text())
             .then(data => {
                 // Error messages from script execution will be passed over stdout, therefore if any data is 

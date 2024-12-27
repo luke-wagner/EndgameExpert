@@ -29,7 +29,7 @@ def get_outcome(result):
         return 0
 
 # Parse data from monthly archive and insert into game_data
-def parse_month_data(json, user_player_name, month, year):
+def parse_month_data(json, session_id, user_player_name, month, year):
     for game in json["games"]:
         game_link = game["url"]
         pgn = game["pgn"]
@@ -41,22 +41,28 @@ def parse_month_data(json, user_player_name, month, year):
         outcome = get_outcome(game_result)
 
         # Insert into game_data table
-        sql = "INSERT INTO game_data (player_name, game_link, player_color, outcome, result, month, year) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-        vals = (user_player_name, game_link, player_color, outcome, game_result, month, year)
+        sql = """
+        INSERT INTO game_data 
+        (session_id, player_name, game_link, player_color, outcome, result, month, year) 
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+        ON DUPLICATE KEY UPDATE player_name = player_name, game_link = game_link;
+        """
+        vals = (session_id, user_player_name, game_link, player_color, outcome, game_result, month, year)
         try:
             cursor.execute(sql, vals)
             db.commit()
-        except:
-            pass
+        except Exception as e:
+            sys.stderr.write(str(e))
 
         # Insert into fens table
         categorize_game(pgn, player_color, game_link)
 
 if __name__ == "__main__":
     # Capture arguments passed from PHP
-    ccom_username = sys.argv[1]
-    start_date = sys.argv[2]
-    end_date = sys.argv[3]
+    session_id = sys.argv[1]
+    ccom_username = sys.argv[2]
+    start_date = sys.argv[3]
+    end_date = sys.argv[4]
 
     # Iterate over all month date combinations possible in this timeframe
     start = datetime.strptime(start_date, "%Y-%m-%d")
@@ -71,7 +77,7 @@ if __name__ == "__main__":
         url = f"https://api.chess.com/pub/player/{ccom_username}/games/{year_str}/{month_str}"
         print("Sent request: " + url)
         json_data = dr.send_request(url)        
-        parse_month_data(json_data, ccom_username, month_str, year_str)
+        parse_month_data(json_data, session_id, ccom_username, month_str, year_str)
 
         # Increment by one month
         if current.month == 12:
