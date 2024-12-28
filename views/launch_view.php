@@ -24,11 +24,11 @@
         <div class="inline-fields">
             <label for="start-date">Start date:</label>
             <div>
-                <input id="start-date" type="date" />
+                <input id="start-date" name="start-date" type="date" />
             </div>
             <label for="end-date">End date:</label>
             <div>
-                <input id="end-date" type="date" />
+                <input id="end-date" name="end-date" type="date" />
             </div>
         </div>
 
