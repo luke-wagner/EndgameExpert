@@ -7,6 +7,7 @@ sys.path.append('../') # to include python files in the root directory
 
 import dependencies.pgnToFen.pgntofen as ptf
 from categorize_pos import *
+from flip_fen_sides import *
 
 from config import DB_USERNAME, DB_PWD
 
@@ -42,6 +43,9 @@ def categorize_game(pgn, player_color, game_link):
                 continue
 
             descriptor = categorize_pos(player_color, fen)
+
+            if player_color == 'B':
+                fen = get_flipped_fen(fen)
             
             # Insert into fens table
             sql = """
@@ -49,7 +53,7 @@ def categorize_game(pgn, player_color, game_link):
             (game_link, move_number, piece_count, fen, descriptor) 
             VALUES (%s, %s, %s, %s, %s) AS new 
             ON DUPLICATE KEY UPDATE 
-            descriptor = new.descriptor
+            fen = new.fen, descriptor = new.descriptor
             """
             val = (game_link, move_number, num_pieces, fen, descriptor)
             try:
