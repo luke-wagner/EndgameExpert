@@ -17,6 +17,21 @@ db = mysql.connector.connect(
 
 cursor = db.cursor()
 
+# session_data table gives a way to track which data has been fetched for the active session
+def insert_session_data(session_id, username, year, month):
+    # Insert into session_data table
+    sql = """
+    INSERT INTO session_data
+    (session_id, username, month_str, year_str)
+    VALUES (%s, %s, %s, %s)
+    """
+    vals = (session_id, username, month, year)
+    try:
+        cursor.execute(sql, vals)
+        db.commit()
+    except Exception as e:
+        sys.stderr.write(str(e))
+
 # Return outcome as int from result string
 # Listing of game result codes at https://www.chess.com/news/view/published-data-api#game-results
 # Return 1 for win, -1 for loss, and 0 for draw
@@ -73,11 +88,29 @@ if __name__ == "__main__":
         month_str = str(current.month).zfill(2)
         year_str = str(current.year)
 
-        # Construct API call - use monthly archives
-        url = f"https://api.chess.com/pub/player/{ccom_username}/games/{year_str}/{month_str}"
-        print("Sent request: " + url)
-        json_data = dr.send_request(url)        
-        parse_month_data(json_data, session_id, ccom_username, month_str, year_str)
+        # Check if games were already fetched for this month/year in the active session
+        sql = f"""
+        SELECT COUNT(*) FROM session_data
+        WHERE session_id = {session_id}
+        AND username = '{ccom_username}'
+        AND year_str = '{year_str}' AND month_str = '{month_str}'
+        """
+        try:
+            cursor.execute(sql)
+            num_occurences = cursor.fetchone()[0]
+        except Exception as e:
+            sys.stderr.write(str(e))
+
+        if num_occurences < 1:  # Data not yet fetched for this user and this month/year
+            insert_session_data(session_id, ccom_username, year_str, month_str)
+
+            # Construct API call - use monthly archives
+            url = f"https://api.chess.com/pub/player/{ccom_username}/games/{year_str}/{month_str}"
+            print("Sent request: " + url)
+            json_data = dr.send_request(url)        
+            parse_month_data(json_data, session_id, ccom_username, month_str, year_str)      
+        else:
+            print("API call not necessary")
 
         # Increment by one month
         if current.month == 12:
