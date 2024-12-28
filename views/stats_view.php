@@ -23,6 +23,7 @@ if (isset($_GET['username']) && isset($_GET['start-date']) && isset($_GET['end-d
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Endgame Expert | Stats</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="icon" type="image/x-icon" href="/img/knight-icon.ico">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../styles/stats_view.css">
 </head>

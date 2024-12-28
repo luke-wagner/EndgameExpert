@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Endgame Expert</title>
+    <link rel="icon" type="image/x-icon" href="/img/knight-icon.ico">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../styles/launch_view.css">
 </head>
@@ -39,7 +40,7 @@
         ?>
         console.log("Creating session...");
 
-        fetch('scripts/script04_create_session.php') // call script04 to execute
+        fetch('../scripts/script04_create_session.php') // call script04 to execute
             .then(response => response.text())
             .then(data => {
                 console.log("Session id: " + data);
