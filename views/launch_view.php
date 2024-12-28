@@ -15,18 +15,39 @@
 <div class="form-container">
     <div class="form-box">
         <form action="analysis.php" method="GET">
-            <!-- Use a hidden input field to tell page to fetch data on load -->
             <input type="hidden" name="fetch-data" value="true">
             <input type="hidden" name="session" value="">
 
             <label for="username">Chess.com username:</label>
             <input type="text" id="username" name="username" required>
 
-            <label for="start-date">Start date:</label>
-            <input type="date" id="start-date" name="start-date" required>
+            <div class="inline-fields">
+                <label for="start-date">Start date:</label>
+                <input type="date" id="start-date" name="start-date" required>
 
-            <label for="end-date">End date:</label>
-            <input type="date" id="end-date" name="end-date" required>
+                <label for="end-date">End date:</label>
+                <input type="date" id="end-date" name="end-date" required>
+            </div>
+
+            <label>
+                <input type="checkbox" id="remember-me"> Remember Me
+                <div class="tooltip-container">
+                    <span class="tooltip-icon">?</span>
+                    <span class="tooltip-text">
+                        This will store your game data on the server, making future retrievals faster. We will never email you.
+                    </span>
+                </div>
+            </label>
+
+            <div id="extra-fields" style="display: none;">
+                <div class="inline-fields">
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" name="name">
+
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email">
+                </div>
+            </div>
 
             <button type="submit">Submit</button>
         </form>
@@ -34,6 +55,15 @@
 </div>
 
 <script>
+    document.getElementById("remember-me").addEventListener("change", function () {
+        const extraFields = document.getElementById("extra-fields");
+        if (this.checked) {
+            extraFields.style.display = "block";
+        } else {
+            extraFields.style.display = "none";
+        }
+    });
+
     <?php
     // Create new session if doesn't yet exist
     if (isset($_GET['session']) == false) {
