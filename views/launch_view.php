@@ -14,47 +14,97 @@
 
 <div class="form-container">
     <div class="form-box">
-        <form action="analysis.php" method="GET">
-            <input type="hidden" name="fetch-data" value="true">
-            <input type="hidden" name="session" value="">
+        <form id="main-form" action="analysis.php" method="GET">
+        <input type="hidden" name="fetch-data" value="true">
+        <input type="hidden" name="session" value="">
 
-            <label for="username">Chess.com username:</label>
-            <input type="text" id="username" name="username" required>
+        <label for="username">Chess.com username:</label>
+        <input type="text" id="username" name="username" required>
 
+        <div class="inline-fields">
+            <label for="start-date">Start date:</label>
+            <div>
+                <input id="start-date" type="date" />
+            </div>
+            <label for="end-date">End date:</label>
+            <div>
+                <input id="end-date" type="date" />
+            </div>
+        </div>
+
+        <label>
+            <input type="checkbox" id="remember-me"> Remember Me
+            <div class="tooltip-container">
+                <span class="tooltip-icon">?</span>
+                <span class="tooltip-text">
+                    This will store your game data on the server, making future retrievals faster. We will never email you.
+                </span>
+            </div>
+        </label>
+
+        <div id="extra-fields" style="display: none;">
             <div class="inline-fields">
-                <label for="start-date">Start date:</label>
-                <input type="date" id="start-date" name="start-date" required>
-
-                <label for="end-date">End date:</label>
-                <input type="date" id="end-date" name="end-date" required>
-            </div>
-
-            <label>
-                <input type="checkbox" id="remember-me"> Remember Me
-                <div class="tooltip-container">
-                    <span class="tooltip-icon">?</span>
-                    <span class="tooltip-text">
-                        This will store your game data on the server, making future retrievals faster. We will never email you.
-                    </span>
+                <label for="name">Name:</label>
+                <div>
+                    <input id="name" type="text" />
                 </div>
-            </label>
-
-            <div id="extra-fields" style="display: none;">
-                <div class="inline-fields">
-                    <label for="name">Name:</label>
-                    <input type="text" id="name" name="name">
-
-                    <label for="email">Email:</label>
-                    <input type="email" id="email" name="email">
+                <label for="email">Email:</label>
+                <div>
+                    <input id="email" type="email" />
                 </div>
             </div>
+        </div>
 
-            <button type="submit">Submit</button>
-        </form>
+        <button type="submit">Submit</button>
+    </form>
     </div>
 </div>
 
 <script>
+    // WIP     --------------------------------------------------------------
+
+    // Function to save form values to localStorage
+    function saveFormValues() {
+        const fields = document.querySelectorAll('input[type="text"], input[type="date"], input[type="email"]');
+        fields.forEach(field => {
+            localStorage.setItem(field.id, field.value); // Store field value using its ID as the key
+        });
+    }
+
+    // Function to populate form values from localStorage
+    function populateFormValues() {
+        const fields = document.querySelectorAll('input[type="text"], input[type="date"], input[type="email"]');
+        fields.forEach(field => {
+            const savedValue = localStorage.getItem(field.id); // Retrieve value from localStorage
+            if (savedValue !== null) {
+                field.value = savedValue; // Set the field's value
+            }
+        });
+
+        // Check if 'name' and 'email' are in localStorage, then check "Remember Me" and show extra fields
+        const name = localStorage.getItem('name');
+        const email = localStorage.getItem('email');
+        const rememberMeCheckbox = document.getElementById("remember-me");
+        const extraFields = document.getElementById("extra-fields");
+
+        if (name && email) {
+            rememberMeCheckbox.checked = true;  // Check the "Remember Me" checkbox
+            extraFields.style.display = "block"; // Show the extra fields for name and email
+        }
+    }
+
+    // Add event listeners to save values on input change
+    document.addEventListener('DOMContentLoaded', () => {
+        populateFormValues(); // Populate values when the page loads
+
+        const fields = document.querySelectorAll('input[type="text"], input[type="date"], input[type="email"]');
+        fields.forEach(field => {
+            field.addEventListener('change', saveFormValues); // Save values on change
+        });
+    });
+
+    // ----------------------------------------------------------------------    
+
     document.getElementById("remember-me").addEventListener("change", function () {
         const extraFields = document.getElementById("extra-fields");
         if (this.checked) {
@@ -62,6 +112,37 @@
         } else {
             extraFields.style.display = "none";
         }
+    });
+
+    document.getElementById("main-form").addEventListener("submit", function (event) {
+        event.preventDefault(); // Prevent default form submission
+
+        const form = this;
+        const session = document.querySelector('input[name="session"]').value;
+        const name = form['name'].value;
+        const email = form['email'].value;
+
+        // Construct the URL with query parameters
+        const queryParams = new URLSearchParams({
+            session: session,
+            name: name,
+            email: email
+        });
+
+        fetch(`../scripts/script05_update_session.php?${queryParams.toString()}`)
+            .then(response => response.text())
+            .then(data => {
+                //console.log(data);
+
+                // Continue with form submission
+                form.submit();
+            })
+            .catch(error => {
+                console.error('Error running PHP script:', error);
+
+                // Optionally submit the form even on error
+                form.submit();
+            });
     });
 
     <?php

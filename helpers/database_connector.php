@@ -40,6 +40,43 @@ function create_new_session() {
     }
 }
 
+// Add client name and email to session info
+function update_session_info($session_id, $client_name, $client_email) {
+    $conn = connect_to_db();
+
+    try {
+        // Prepare the SQL query
+        $sql = "UPDATE `session` 
+                SET client_name = ?, client_email = ?
+                WHERE id = ?";
+
+        // Prepare and bind parameters
+        $stmt = $conn->prepare($sql);
+        if (!$stmt) {
+            throw new Exception("Error preparing statement: " . $conn->error);
+        }
+
+        $stmt->bind_param("ssi", $client_name, $client_email, $session_id);
+
+        // Execute the statement
+        if (!$stmt->execute()) {
+            throw new Exception("Error executing query: " . $stmt->error);
+        }
+
+        echo "Session updated successfully.";
+    } catch (Exception $e) {
+        // Handle errors
+        echo $e->getMessage();
+        exit;
+    } finally {
+        // Close the statement and connection
+        if (isset($stmt)) {
+            $stmt->close();
+        }
+        $conn->close();
+    }
+}
+
 // Get number of months between the start and end date not accounted for in session_data
 // Used for determining whether or not fetch_games.py needs to be run again when
 // timeframe is updated in stats_view
