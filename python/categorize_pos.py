@@ -42,5 +42,7 @@ def categorize_pos(player_color, fen):
         
         if set_pieces.issubset(pawn_endgames):
             descriptor = 'Pawns'
+        else:
+            descriptor = 'Other'
 
     return descriptor

@@ -44,7 +44,13 @@ def categorize_game(pgn, player_color, game_link):
             descriptor = categorize_pos(player_color, fen)
             
             # Insert into fens table
-            sql = "INSERT INTO fens (game_link, move_number, piece_count, fen, descriptor) VALUES (%s, %s, %s, %s, %s)"
+            sql = """
+            INSERT INTO fens 
+            (game_link, move_number, piece_count, fen, descriptor) 
+            VALUES (%s, %s, %s, %s, %s) AS new 
+            ON DUPLICATE KEY UPDATE 
+            descriptor = new.descriptor
+            """
             val = (game_link, move_number, num_pieces, fen, descriptor)
             try:
                 cursor.execute(sql, val)
