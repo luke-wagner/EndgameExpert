@@ -9,19 +9,15 @@ $start_date = $_POST['start-date'];
 $end_date = $_POST['end-date'];
 
 try {
-    // Prepare and execute query for minimum date
-    $min_result = get_min_date_for_user($session_id, $username);
-    $min_date = $min_result['min_date'];
-
-    // Prepare and execute query for maximum date
-    $max_result = get_max_date_for_user($session_id, $username);
-    $max_date = $max_result['max_date'];
+    // Get number of months in between start and end date not accounted for in session_data
+    // If greater than 0, we will need to re-run fetch_games.py to account for all months
+    $num_occurences = get_not_in_range($session_id, $username, $start_date, $end_date);
 
     // Build base redirect URL
     $redirect_url = 'analysis.php?session=' . $session_id . '&';
 
     // Add fetch-data parameter if needed
-    if ($start_date < $min_date || $end_date > $max_date) {
+    if ($num_occurences > 0) {
         $redirect_url .= 'fetch-data=true&';
     }
 

@@ -70,7 +70,7 @@ CREATE TABLE `session` (
   `client_name` varchar(45) DEFAULT NULL,
   `client_email` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=58 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -83,12 +83,63 @@ DROP TABLE IF EXISTS `session_data`;
 CREATE TABLE `session_data` (
   `session_id` int unsigned NOT NULL,
   `username` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `min_date` char(10) COLLATE utf8mb4_0900_as_ci DEFAULT NULL,
-  `max_date` char(10) COLLATE utf8mb4_0900_as_ci DEFAULT NULL,
-  PRIMARY KEY (`session_id`,`username`),
+  `month_str` char(2) COLLATE utf8mb4_0900_as_ci NOT NULL,
+  `year_str` char(4) COLLATE utf8mb4_0900_as_ci NOT NULL,
+  PRIMARY KEY (`session_id`,`username`,`month_str`,`year_str`),
   CONSTRAINT `session_data_session_id` FOREIGN KEY (`session_id`) REFERENCES `session` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_as_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping routines for database 'chessapp'
+--
+/*!50003 DROP FUNCTION IF EXISTS `f_not_in_range` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` FUNCTION `f_not_in_range`(
+    p_session_id INT UNSIGNED,
+    p_username VARCHAR(45),
+    p_start_date DATE,
+    p_end_date DATE
+) RETURNS int
+    DETERMINISTIC
+BEGIN
+    DECLARE total_months INT;
+    DECLARE accounted_months INT;
+
+    -- Normalize the start_date to the first day of the month
+    SET p_start_date = DATE_FORMAT(p_start_date, '%Y-%m-01');
+
+    -- Normalize the end_date to the last day of the month
+    SET p_end_date = LAST_DAY(p_end_date);
+
+    -- Calculate the total months between start and end dates
+    SET total_months = PERIOD_DIFF(EXTRACT(YEAR_MONTH FROM p_end_date), EXTRACT(YEAR_MONTH FROM p_start_date)) + 1;
+
+    -- Count the months in session_data that match the session_id, username, and fall within the range
+    SET accounted_months = (
+        SELECT COUNT(DISTINCT CONCAT(year_str, '-', month_str))
+        FROM session_data
+        WHERE session_id = p_session_id
+          AND username = p_username
+          AND STR_TO_DATE(CONCAT(year_str, '-', month_str, '-01'), '%Y-%m-%d') BETWEEN p_start_date AND p_end_date
+    );
+
+    -- Return the difference
+    RETURN total_months - accounted_months;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -99,4 +150,4 @@ CREATE TABLE `session_data` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-12-27 13:33:46
+-- Dump completed on 2024-12-27 18:35:35

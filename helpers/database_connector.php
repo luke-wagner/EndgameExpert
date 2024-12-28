@@ -40,64 +40,17 @@ function create_new_session() {
     }
 }
 
-// Insert/update session data
-// This is used to keep track of which data has already been processed
-function insert_session_data($session_id, $username, $start_date, $end_date) {
+// Get number of months between the start and end date not accounted for in session_data
+// Used for determining whether or not fetch_games.py needs to be run again when
+// timeframe is updated in stats_view
+function get_not_in_range($session_id, $username, $start_date, $end_date){
     $conn = connect_to_db();
 
-    try {
-        // Prepare the insert query
-        $sql = "
-        INSERT INTO session_data (session_id, username, min_date, max_date)
-        VALUES (?, ?, ?, ?)
-        ON DUPLICATE KEY UPDATE
-            min_date = VALUES(min_date),
-            max_date = VALUES(max_date);
-        ";
-
-        $stmt = $conn->prepare($sql);
-        if (!$stmt) {
-            throw new Exception("Error preparing statement: " . $conn->error);
-        }
-
-        // Bind the parameters
-        $stmt->bind_param("isss", $session_id, $username, $start_date, $end_date);
-
-        // Execute the statement
-        if ($stmt->execute()) {
-            echo "Insertion successful";
-        } else {
-            throw new Exception("Error executing statement: " . $stmt->error);
-        }
-    } catch (Exception $e) {
-        // Handle errors
-        echo $e->getMessage();
-        exit;
-    } finally {
-        // Close the statement and connection
-        $stmt->close();
-        $conn->close();
-    }
-}
-
-function get_min_date_for_user($session_id, $username){
-    $conn = connect_to_db();
-
-    // SQL query to fetch data
-    $sql = "select min_date from session_data where session_id = $session_id and username = '$username'";
+    // Use defined f_not_in_range function
+    $sql = "SELECT f_not_in_range($session_id, '$username', '$start_date', '$end_date') AS num_occurrences;";
 
     $result = $conn->query($sql);
-    return $result->fetch_assoc();
-}
-
-function get_max_date_for_user($session_id, $username){
-    $conn = connect_to_db();
-
-    // SQL query to fetch data
-    $sql = "select max_date from session_data where session_id = $session_id and username = '$username'";
-
-    $result = $conn->query($sql);
-    return $result->fetch_assoc();
+    return $result->fetch_assoc()['num_occurrences'];
 }
 
 function fetch_games_by_descriptor($username, $start_date, $end_date, $descriptor){

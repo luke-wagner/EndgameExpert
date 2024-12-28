@@ -39,19 +39,6 @@
         var start_date = <?php echo $start_date; ?>;
         var end_date = <?php echo $end_date; ?>;
         
-        // Before fetching data and inserting into database, save session info to session_data table
-        fetch('../scripts/script05_insert_session_data.php?session=' + session_id + '&username=' + 
-        ccom_username + '&start-date=' + start_date + '&end-date=' + end_date)
-            .then(response => response.text())
-            .then(data => {
-            })
-            .catch(error => {
-                // Error from HTTP request
-                console.error('Error:', error);
-                document.getElementById('error-box').style.display = 'block';
-                document.getElementById('error-message').innerHTML = "An error occurred: " + error.message;
-            });
-
         // Set initial status message
         document.getElementById('status-message').innerHTML = "Fetching game data...";
 
