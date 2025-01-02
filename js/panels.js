@@ -30,6 +30,30 @@ document.querySelectorAll('details').forEach((details, index) => {
 
                     data.forEach(game => {
                         if (loopCounter < 18){
+                            // Create the descriptive text elements
+                            let titleText = document.createElement('p');
+                            titleText.textContent = `vs ` + game.opponent + ' (' + game.opp_rating + ')';
+                            titleText.style.textAlign = 'center';
+                            titleText.style.fontWeight = 'bold';
+                            titleText.style.margin = '5px 0';
+
+                            let expectedText = document.createElement('p');
+                            expectedText.textContent = `Expected Result: ---`;
+                            expectedText.style.textAlign = 'center';
+                            expectedText.style.margin = '2px 0';
+
+                            let actualText = document.createElement('p');
+                            actualText.textContent = `Actual Result: `;
+                            if (game.outcome == '1'){
+                                actualText.textContent += `Win`;
+                            } else if (game.outcome == '-1') {
+                                actualText.textContent += `Loss`;
+                            } else if (game.outcome == '0') {
+                                actualText.textContent += `Draw`;
+                            }
+                            actualText.style.textAlign = 'center';
+                            actualText.style.margin = '2px 0';
+
                             // Create and insert the iframe
                             var iframe = document.createElement('iframe');
                             iframe.src = 'https://mutsuntsai.github.io/fen-tool/gen/?fen=' + game.fen;  // Replace with your iframe source
@@ -91,7 +115,15 @@ document.querySelectorAll('details').forEach((details, index) => {
 
                             container2.appendChild(container);
 
-                            gameGrid.appendChild(container2);
+                            // Create a wrapper for the descriptive text and iframe
+                            let wrapper = document.createElement('div');
+                            wrapper.style.textAlign = 'center';  // Center align text and iframe
+                            wrapper.appendChild(titleText);
+                            wrapper.appendChild(expectedText);
+                            wrapper.appendChild(actualText);
+                            wrapper.appendChild(container2);
+
+                            gameGrid.appendChild(wrapper);
                         }
 
                         loopCounter += 1;
