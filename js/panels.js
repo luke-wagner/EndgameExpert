@@ -38,7 +38,16 @@ document.querySelectorAll('details').forEach((details, index) => {
                             titleText.style.margin = '5px 0';
 
                             let expectedText = document.createElement('p');
-                            expectedText.textContent = `Expected Result: ---`;
+                            expectedText.textContent = `Expected Result: `;
+                            if (game.eval == '1'){
+                                expectedText.textContent += `Win`;
+                            } else if (game.eval == '-1') {
+                                expectedText.textContent += `Loss`;
+                            } else if (game.eval == '0') {
+                                expectedText.textContent += `Draw`;
+                            } else {
+                                expectedText.textContent += `---`;
+                            }
                             expectedText.style.textAlign = 'center';
                             expectedText.style.margin = '2px 0';
 

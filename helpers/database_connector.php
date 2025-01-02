@@ -107,9 +107,10 @@ function fetch_games_by_descriptor($username, $start_date, $end_date, $descripto
 		)
         group by game_link
     )
-        select f.fen, f.game_link, gd.opponent_name as opponent, gd.opponent_rating as opp_rating, gd.outcome
+        select f.fen, f.game_link, gd.opponent_name as opponent, gd.opponent_rating as opp_rating, gd.outcome, fe.eval 
         from a 
         inner join fens f on (f.game_link = a.game_link and f.move_number = a.move_number)
+        left join fen_evals fe on (fe.fen = f.fen)
         inner join game_data gd on (gd.game_link = f.game_link)
     ";
 
