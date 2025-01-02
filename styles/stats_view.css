@@ -74,15 +74,16 @@ details summary {
 
 .game-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(3, 1fr); /* Ensure a fixed 3-column layout */
+    gap: 20px; /* Space between items */
     padding-top: 10px;
+    justify-items: start; /* Align items to the start of each column */
 }
 
 .game-embed {
     text-align: center;
-    width:354px;
-    height:354px;
+    width: 354px;
+    height: 354px;
 }
 
 @media (max-width: 768px) {

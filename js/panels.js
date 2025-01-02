@@ -8,6 +8,11 @@ document.querySelectorAll('details').forEach((details, index) => {
     details.addEventListener('toggle', function() {
         if (this.open) {
             let gameGrid = document.getElementById('gameGrid' + index);
+            
+            if (gameGrid.hasChildNodes()) {
+                return; // Don't add more iframes if already loaded
+            }
+
             let descriptor = this.getAttribute('data-descriptor'); // Get the descriptor from the data attribute
             
             var queryString = window.location.search;
