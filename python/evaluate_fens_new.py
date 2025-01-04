@@ -16,16 +16,19 @@ db = mysql.connector.connect(
 
 cursor = db.cursor()
 
-def evaluate_fens(session_id, username, year, month):
+def evaluate_fens(session_id):
     sql = """
     select f.game_link, f.move_number, f.fen
     from game_data gd
     inner join fens f on (f.game_link = gd.game_link)
-    where gd.session_id = %s and player_name = %s and gd.month = %s and gd.year = %s
+    left join fen_evals fe on (fe.fen = f.fen)
+    where gd.session_id = %s	-- Active session
+    and fe.eval is null	-- Don't do evaluation if already done
     """
-    vals = (session_id, username, month, year)
-    cursor.execute(sql, vals)
+    cursor.execute(sql, (session_id,))
     results = cursor.fetchall()
+
+    eval_num = None # Placeholder value
     
     for row in results:
         game_link, move_number, fen = row
@@ -61,5 +64,6 @@ def evaluate_fens(session_id, username, year, month):
         print(f"Game Link: {game_link}, Move Number: {move_number}, FEN: {fen}", "Eval: ", eval_num)
 
 if __name__ == "__main__":
+    evaluate_fens(121) # Function call for testing purposes
 
     db.close()

@@ -3,7 +3,7 @@
 def get_flipped_fen(fen):
     stack = []
 
-    rows = fen.split('/')
+    rows = fen.split()[0].split('/')
     for row in rows:
         reversed_row = row[::-1] # Reverse string
         stack.append(reversed_row)
@@ -15,6 +15,9 @@ def get_flipped_fen(fen):
         final_fen += row
         if i < stack_len - 1:
             final_fen += '/'
+
+    for sub_str in fen.split()[1:]:
+        final_fen += ' ' + sub_str
 
     return final_fen
 
