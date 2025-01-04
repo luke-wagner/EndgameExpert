@@ -1,84 +1,78 @@
-import mysql.connector
-import requests
+import sys
+import asyncio
 import json
-from tqdm.asyncio import tqdm
-from concurrent.futures import ThreadPoolExecutor, as_completed
 import time
+import aiohttp
+import aiomysql
+
+sys.path.append('../')  # to include python files in the root directory
 
 from config import DB_USERNAME, DB_PWD
 
-db = mysql.connector.connect(
-  host="localhost",
-  user=DB_USERNAME,
-  password=DB_PWD,
-  database="chessapp"
-)
+async def evaluate_fens(session_id):
+    start_time = time.time()
 
-cursor = db.cursor()
-
-def process_row(row):
-    local_conn = mysql.connector.connect(
+    # Create a connection pool
+    pool = await aiomysql.create_pool(
         host="localhost",
         user=DB_USERNAME,
         password=DB_PWD,
-        database="chessapp"
+        db="chessapp",
+        minsize=1,
+        maxsize=10  # Adjust based on your needs
     )
 
-    local_cursor = db.cursor()
+    async with pool.acquire() as conn:
+        async with conn.cursor() as cursor:
+            sql = """
+            select f.game_link, f.move_number, f.fen
+            from game_data gd
+            inner join fens f on (f.game_link = gd.game_link)
+            left join fen_evals fe on (fe.fen = f.fen)
+            where gd.session_id = %s    -- Active session
+            and fe.eval is null    -- Don't do evaluation if already done
+            """
+            await cursor.execute(sql, (session_id,))
+            results = await cursor.fetchall()
 
-    fen = row[0]
+    async with aiohttp.ClientSession() as session:
+        tasks = [fetch_and_store_eval(pool, session, game_link, move_number, fen) for game_link, move_number, fen in results]
+        await asyncio.gather(*tasks)
 
-    fen_formatted = fen.replace(' ', '_')
+    pool.close()
+    await pool.wait_closed()
 
-    r = requests.get('http://tablebase.lichess.ovh/standard?fen=' + fen_formatted)
+    end_time = time.time()
+    print(f"Execution Time: {end_time - start_time:.2f} seconds")
 
+
+async def fetch_and_store_eval(pool, session, game_link, move_number, fen):
     try:
-        data = json.loads(r.content)
+        async with session.get(f'http://tablebase.lichess.ovh/standard?fen={fen}') as response:
+            if response.status == 200:
+                data = await response.json()
+                eval_category = data.get('category')
 
-        eval = data['category']
+                eval_num = {
+                    'win': 1,
+                    'loss': -1,
+                    'draw': 0
+                }.get(eval_category, None)
 
-        if eval == 'win':
-            eval_num = 1
-        elif eval == 'loss':
-            eval_num = -1
-        elif eval == 'draw':
-            eval_num = 0
-        else:
-            print("Special case detected")
-            raise Exception
+                if eval_num is not None:
+                    async with pool.acquire() as conn:
+                        async with conn.cursor() as cursor:
+                            sql = "INSERT INTO fen_evals (fen, eval) VALUES (%s, %s)"
+                            val = (fen, eval_num)
+                            await cursor.execute(sql, val)
+                            await conn.commit()
 
-        # Insert into evals table
-        sql = "INSERT INTO evals (fen, eval) VALUES (%s, %s)"
-        val = (fen, eval_num)
-        try:
-            local_cursor.execute(sql, val)
-        except:
-            pass
-
-    except:
-        pass
-
-    local_conn.commit()
-    local_cursor.close()
-    local_conn.close()
-
-def process_rows_in_parallel(rows, max_workers=10):
-    with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        futures = [executor.submit(process_row, row) for row in rows]
-        for future in as_completed(futures):
-            result = future.result()  # Get result if needed, or just process exceptions
+                print(f"Game Link: {game_link}, Move Number: {move_number}, FEN: {fen}, Eval: {eval_num}")
+            else:
+                print(f"Failed to fetch data for FEN: {fen}")
+    except Exception as e:
+        print(f"Error processing FEN: {fen} - {e}")
 
 
-cursor.execute("SELECT distinct fen FROM fens")
-
-result = cursor.fetchall()
-
-start_time = time.time()
-process_rows_in_parallel(result, max_workers=10)  # Adjust workers based on your system
-end_time = time.time()
-
-print(f"Processing completed in {end_time - start_time} seconds.")
-
-
-
-
+if __name__ == "__main__":
+    asyncio.run(evaluate_fens(125))
