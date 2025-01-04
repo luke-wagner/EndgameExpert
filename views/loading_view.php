@@ -54,7 +54,29 @@
                     document.getElementById('error-message').innerHTML = "An error occurred: " + data;
                 } else {    
                     // Update status message
-                    document.getElementById('status-message').innerHTML = "Game data fetched";
+                    document.getElementById('status-message').innerHTML = "Evaluating positions...";
+                }
+
+            })
+            .catch(error => {
+                // Error from HTTP request
+                console.error('Error:', error);
+                document.getElementById('error-box').style.display = 'block';
+                document.getElementById('error-message').innerHTML = "An error occurred: " + error.message;
+            });
+
+        fetch('scripts/script06_evaluate_fens.php?session=' +session_id)
+            .then(response => response.text())
+            .then(data => {
+                // Error messages from script execution will be passed over stdout, therefore if any data is 
+                // returned, display this as an error message
+                if (data != ""){
+                    // Error from script execution
+                    document.getElementById('error-box').style.display = 'block';
+                    document.getElementById('error-message').innerHTML = "An error occurred: " + data;
+                } else {    
+                    // Update status message
+                    document.getElementById('status-message').innerHTML = "Evaluation complete";
 
                     // Redirect to stats_view
                     // Delete fetch_data param and then refresh page

@@ -99,4 +99,8 @@ async def fetch_and_store_eval(pool, session, game_link, move_number, fen):
 
 
 if __name__ == "__main__":
-    asyncio.run(evaluate_fens(131))
+    #asyncio.run(evaluate_fens(131)) # Function call for testing purposes
+
+    # Capture arguments passed from PHP
+    session_id = sys.argv[1]
+    asyncio.run(evaluate_fens(session_id))
