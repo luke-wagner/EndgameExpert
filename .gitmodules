@@ -1,3 +1,0 @@
-[submodule "dependencies/pgnToFen"]
-	path = dependencies/pgnToFen
-	url = https://github.com/luke-wagner/pgnToFen.git

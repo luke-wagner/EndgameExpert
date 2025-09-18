@@ -1,7 +1,0 @@
-.vscode
-__pycache__
-downloads
-config.py
-.env
-backup
-out/*

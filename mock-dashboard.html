@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Three-way Hollow Pie Charts</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 40px;
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+    }
+    .page-title {
+      text-align: center;
+      color: #333;
+      margin-bottom: 40px;
+    }
+    .charts-container {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body>
+  <h1 class="page-title">Project Analysis Dashboard</h1>
+  
+  <div class="charts-container" id="charts-container"></div>
+
+  <script>
+    // =============================================================================
+    // HOLLOW PIE CHART COMPONENT (Black Box - Don't modify)
+    // =============================================================================
+    class HollowPieChart {
+      constructor(container, config) {
+        this.container = typeof container === 'string' ? document.getElementById(container) : container;
+        this.config = {
+          title: config.title || 'Untitled Chart',
+          size: config.size || 400,
+          sections: config.sections || {},
+          colors: config.colors || { green: '#44aa44', red: '#ff4444', gray: '#666666' }
+        };
+        this.id = 'chart-' + Math.random().toString(36).substr(2, 9);
+        this.render();
+      }
+
+      render() {
+        const { title, size, sections, colors } = this.config;
+        const cx = size / 2;
+        const cy = size / 2;
+        const rOuter = size * 0.36;
+        const rInner = size * 0.2;
+
+        this.container.innerHTML = `
+          <div style="
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            text-align: center;
+          ">
+            <h3 style="margin: 0 0 20px 0; color: #333; font-size: 18px;">${title}</h3>
+            <svg width="${size}" height="${size}" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                ${this.createPatterns()}
+              </defs>
+              <g class="base-sections">
+                <path class="section-green" fill="${colors.green}" />
+                <path class="section-red" fill="${colors.red}" />
+                <path class="section-gray" fill="${colors.gray}" />
+              </g>
+              <g class="overlap-sections">
+                <path class="overlap-gr" fill="${colors.green}" />
+                <path class="overlap-gr-stripes" fill="url(#stripes-red-${this.id})" />
+                <path class="overlap-rg" fill="${colors.red}" />
+                <path class="overlap-rg-stripes" fill="url(#stripes-gray-${this.id})" />
+                <path class="overlap-gg" fill="${colors.gray}" />
+                <path class="overlap-gg-stripes" fill="url(#stripes-green-${this.id})" />
+                <path class="overlap-all" fill="${colors.green}" />
+                <path class="overlap-all-red" fill="url(#stripes-red-${this.id})" opacity="0.6" />
+                <path class="overlap-all-gray" fill="url(#stripes-gray-${this.id})" opacity="0.6" />
+              </g>
+            </svg>
+            ${this.createLegend()}
+          </div>
+        `;
+
+        this.drawSections(cx, cy, rOuter, rInner);
+        this.addInteractivity();
+      }
+
+      createPatterns() {
+        const { colors } = this.config;
+        return `
+          <pattern id="stripes-red-${this.id}" patternUnits="userSpaceOnUse" width="12" height="12" patternTransform="rotate(45)">
+            <rect width="12" height="12" fill="none" />
+            <path d="M0,0 L0,12" stroke="${colors.red}" stroke-width="5" opacity="0.9" />
+          </pattern>
+          <pattern id="stripes-green-${this.id}" patternUnits="userSpaceOnUse" width="12" height="12" patternTransform="rotate(45)">
+            <rect width="12" height="12" fill="none" />
+            <path d="M0,0 L0,12" stroke="${colors.green}" stroke-width="5" opacity="0.9" />
+          </pattern>
+          <pattern id="stripes-gray-${this.id}" patternUnits="userSpaceOnUse" width="12" height="12" patternTransform="rotate(45)">
+            <rect width="12" height="12" fill="none" />
+            <path d="M0,0 L0,12" stroke="${colors.gray}" stroke-width="5" opacity="0.9" />
+          </pattern>
+        `;
+      }
+
+      createLegend() {
+        const { sections, colors } = this.config;
+        return `
+          <div style="display: flex; justify-content: center; gap: 20px; margin-top: 15px; font-size: 14px;">
+            <div style="display: flex; align-items: center; gap: 5px;">
+              <div style="width: 16px; height: 16px; background: ${colors.green}; border-radius: 2px;"></div>
+              <span>${sections.green.label}</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 5px;">
+              <div style="width: 16px; height: 16px; background: ${colors.red}; border-radius: 2px;"></div>
+              <span>${sections.red.label}</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 5px;">
+              <div style="width: 16px; height: 16px; background: ${colors.gray}; border-radius: 2px;"></div>
+              <span>${sections.gray.label}</span>
+            </div>
+          </div>
+        `;
+      }
+
+      polarToCartesian(cx, cy, r, angle) {
+        const rad = (angle - 90) * Math.PI / 180;
+        return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
+      }
+
+      createArc(cx, cy, rOuter, rInner, startAngle, endAngle) {
+        const startOuter = this.polarToCartesian(cx, cy, rOuter, endAngle);
+        const endOuter = this.polarToCartesian(cx, cy, rOuter, startAngle);
+        const startInner = this.polarToCartesian(cx, cy, rInner, startAngle);
+        const endInner = this.polarToCartesian(cx, cy, rInner, endAngle);
+        const largeArc = endAngle - startAngle <= 180 ? 0 : 1;
+
+        return [
+          "M", startOuter.x, startOuter.y,
+          "A", rOuter, rOuter, 0, largeArc, 0, endOuter.x, endOuter.y,
+          "L", startInner.x, startInner.y,
+          "A", rInner, rInner, 0, largeArc, 1, endInner.x, endInner.y,
+          "Z"
+        ].join(" ");
+      }
+
+      drawSections(cx, cy, rOuter, rInner) {
+        const { sections } = this.config;
+
+        Object.keys(sections).forEach(color => {
+          const { start, end } = sections[color];
+          const path = this.createArc(cx, cy, rOuter, rInner, start, end);
+          this.container.querySelector(`.section-${color}`).setAttribute("d", path);
+        });
+
+        const overlaps = [
+          { colors: ['green', 'red'], base: 'overlap-gr', stripes: 'overlap-gr-stripes' },
+          { colors: ['red', 'gray'], base: 'overlap-rg', stripes: 'overlap-rg-stripes' },
+          { colors: ['gray', 'green'], base: 'overlap-gg', stripes: 'overlap-gg-stripes' }
+        ];
+
+        overlaps.forEach(({ colors, base, stripes }) => {
+          const [c1, c2] = colors;
+          const start = Math.max(sections[c1].start, sections[c2].start);
+          const end = Math.min(sections[c1].end, sections[c2].end);
+          
+          if (start < end) {
+            const path = this.createArc(cx, cy, rOuter, rInner, start, end);
+            this.container.querySelector(`.${base}`).setAttribute("d", path);
+            this.container.querySelector(`.${stripes}`).setAttribute("d", path);
+          }
+        });
+
+        const tripleStart = Math.max(sections.green.start, sections.red.start, sections.gray.start);
+        const tripleEnd = Math.min(sections.green.end, sections.red.end, sections.gray.end);
+        
+        if (tripleStart < tripleEnd) {
+          const path = this.createArc(cx, cy, rOuter, rInner, tripleStart, tripleEnd);
+          this.container.querySelector('.overlap-all').setAttribute("d", path);
+          this.container.querySelector('.overlap-all-red').setAttribute("d", path);
+          this.container.querySelector('.overlap-all-gray').setAttribute("d", path);
+        }
+      }
+
+      addInteractivity() {
+        const paths = this.container.querySelectorAll('path');
+        paths.forEach(path => {
+          path.style.cursor = 'pointer';
+          path.style.transition = 'opacity 0.2s, filter 0.2s';
+        });
+
+        this.container.querySelectorAll('.base-sections path').forEach(path => {
+          path.addEventListener('mouseenter', () => {
+            path.style.opacity = '0.8';
+            path.style.filter = 'brightness(1.1)';
+          });
+          path.addEventListener('mouseleave', () => {
+            path.style.opacity = '1';
+            path.style.filter = 'none';
+          });
+        });
+
+        const overlapGroups = [
+          ['overlap-gr', 'overlap-gr-stripes'],
+          ['overlap-rg', 'overlap-rg-stripes'],
+          ['overlap-gg', 'overlap-gg-stripes'],
+          ['overlap-all', 'overlap-all-red', 'overlap-all-gray']
+        ];
+        
+        overlapGroups.forEach(group => {
+          const elements = group.map(cls => this.container.querySelector(`.${cls}`)).filter(el => el?.getAttribute('d'));
+          
+          if (elements.length > 0) {
+            elements.forEach(element => {
+              element.addEventListener('mouseenter', () => {
+                elements.forEach(el => {
+                  el.style.opacity = '0.8';
+                  el.style.filter = 'brightness(1.2)';
+                });
+              });
+              element.addEventListener('mouseleave', () => {
+                elements.forEach(el => {
+                  el.style.opacity = '1';
+                  el.style.filter = 'none';
+                });
+              });
+            });
+          }
+        });
+      }
+    }
+
+    // =============================================================================
+    // CHART CREATION - Edit these to customize your charts
+    // =============================================================================
+
+    const container = document.getElementById('charts-container');
+
+    // Chart 1: Q1 Marketing Analysis
+    (() => {
+      const chartDiv = document.createElement('div');
+      container.appendChild(chartDiv);
+      
+      new HollowPieChart(chartDiv, {
+        title: "Q1 Marketing Analysis",
+        size: 320,
+        sections: {
+          green: { start: 0, end: 140, label: "Social Media" },
+          red: { start: 90, end: 230, label: "Email Marketing" },
+          gray: { start: 180, end: 360, label: "Print Advertising" }
+        }
+      });
+    })();
+
+    // Chart 2: Development Resources
+    (() => {
+      const chartDiv = document.createElement('div');
+      container.appendChild(chartDiv);
+      
+      new HollowPieChart(chartDiv, {
+        title: "Development Resources",
+        size: 320,
+        sections: {
+          green: { start: 0, end: 120, label: "Frontend" },
+          red: { start: 80, end: 200, label: "Backend" },
+          gray: { start: 160, end: 360, label: "DevOps" }
+        }
+      });
+    })();
+
+    // Chart 3: Customer Segments
+    (() => {
+      const chartDiv = document.createElement('div');
+      container.appendChild(chartDiv);
+      
+      new HollowPieChart(chartDiv, {
+        title: "Customer Segments",
+        size: 320,
+        sections: {
+          green: { start: 0, end: 160, label: "Enterprise" },
+          red: { start: 120, end: 280, label: "SMB" },
+          gray: { start: 240, end: 360, label: "Individual" }
+        },
+        colors: {
+          green: "#2E8B57",
+          red: "#DC143C", 
+          gray: "#708090"
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
