@@ -85,7 +85,15 @@ git remote -v
 
 You should now see `git@github.com:...`
 
-## 6. Make commits and push
+## 6. Checkout to the correct branch for development
+
+At present, this branch is called "development"
+
+```
+git checkout development
+```
+
+## 7. Make commits and push
 
 ```bash
 git add .
